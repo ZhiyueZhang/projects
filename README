@@ -1,0 +1,10 @@
+01/27/14
+Text-Based Chess by Simon and Jack
+
+This is a text-based version of Chess implemented with C++
+
+This game allows PvP and PvC.
+
+The general flow of the games is as follows:
+
+setup board -> create game -> play game -> repeat
