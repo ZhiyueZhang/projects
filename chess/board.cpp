@@ -349,18 +349,48 @@ void Board::setP(Piece* piece, Position p) {
 
 
 void Board::moveP(Position initial, Position final) {
+    Piece* p = getP(initial);	//grabs piece from initial position f, which should be queen
+
 	if(getB(final)->getOccupied())	//if enemy piece is there
 		deleteP(final);				//remove piece
 
-    Piece* p = getP(initial);	//grabs piece from initial position f, which should be queen
+	else if(p->getsymbol() == 'P'){
+		Position p2 = Position(final.getRow()-1, final.getColumn());
+
+		if(getB(p2)->getOccupied() && getP(p2)->getsymbol() == 'p')	//en passant
+			deleteP(p2);
+	}
+
+	else if(p->getsymbol() == 'p'){
+		Position p1 = Position(final.getRow()+1, final.getColumn());
+
+		if(getB(p1)->getOccupied() && getP(p1)->getsymbol() == 'P')	//en passant
+			deleteP(p1);
+	}
+
 
     setP(initial, true);	//nulls Position f in Piece array, sets it to unoccupied in board array
     setP(p, final);			//sets that piece to final position t
 	p->setcurrent(final);	//sets current position of Piece p to Position t
 	getB(final)->setOccupied(true);	//set new position to occupied!!!
 
-	if(tolower(p->getsymbol()) == 'p')
+	if(tolower(p->getsymbol()) == 'p'){
 		dynamic_cast<Pawn*>(p)->set_moved();	//if pawn, it has moved
+		
+		if(abs(initial.getRow() - final.getRow()) == 2){	//pawn moved 2
+			Position left = Position(final.getRow(), final.getColumn() - 1);
+			Position right = Position(final.getRow(), final.getColumn() + 1);
+			Piece *l =0, *r = 0;
+			if(final.getColumn() - 1 >= 'a' && getP(left)) l = getP(left);
+			if(final.getColumn() + 1 <= 'h' && getP(right)) r = getP(right);
+
+			if(l && tolower(l->getsymbol()) == 'p' && l->getteam() != p->getteam())
+				dynamic_cast<Pawn*>(l)->enpassant(final);
+			
+			if(r && tolower(r->getsymbol()) == 'p' && r->getteam() != p->getteam())
+				dynamic_cast<Pawn*>(r)->enpassant(final);
+		}
+	}
 
 	pawn_promote(final);
 

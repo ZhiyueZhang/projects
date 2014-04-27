@@ -17,6 +17,12 @@ void Pawn::getmoves(){
 	moves.clear();
 	int row = current.getRow();
 	char column = current.getColumn();
+
+	//add moves due to en passant
+	for(int i = 0; i < (int)passant.size(); i++)
+		moves.push_back(passant[i]);
+	
+	passant.clear();
 	
 	// gets the team (white/black)
 	if(getteam() == 1){
@@ -85,4 +91,15 @@ void Pawn::getmoves(){
 //cout << "Pawn: " << this->getcurrent().getColumn() << this->getcurrent().getRow() << endl;
 	///for(list<Position>::iterator it = moves.begin(); it != moves.end(); it++)
 		//cout << "Column: " << it->getColumn() << " Row: " << it->getRow() <<endl;
+}
+
+void Pawn::enpassant(Position enemy){
+	if(this->getteam() == 1){	//this team is white, move upwards
+		Position add = Position(enemy.getRow()+1, enemy.getColumn());
+		passant.push_back(add);
+	}
+	else{
+		Position add = Position(enemy.getRow()-1, enemy.getColumn());
+		passant.push_back(add);
+	}
 }
